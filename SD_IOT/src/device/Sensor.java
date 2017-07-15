@@ -100,14 +100,6 @@ public class Sensor {
 		return Math.sqrt(Math.pow((x1 - x2), 2.0) + Math.pow((y1 - y2), 2.0));
 	}
 
-	// whether s1 and s2 has relation, depending on distance
-	public boolean hasRelation(Sensor s1, Sensor s2) {
-		if (calculateDistance(s1.getX(), s1.getY(), s2.getX(), s2.getY()) <= Sensor.MAX_DIS_BETWEEN && !s1.equals(s2)) {
-			return true;
-		}
-		return false;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
