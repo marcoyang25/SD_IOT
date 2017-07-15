@@ -58,6 +58,12 @@ public class SetCover {
 		sensorsAvailable.remove(maxSensor);
 		return S;
 	} // end method selectMax
+	
+	public static Sensor ESRS(Request request, Sensors sensors) {
+		final Set<Target> X = new HashSet<>(request.getLocations());
+		final Set<Sensor> F = new HashSet<>(sensors.values());
+		return null;
+	}
 
 	private static Set<Target> selectMinCost(Set<Sensor> sensorsAvailable, Set<Target> U, Set<Sensor> sensorsSelected) {
 		Sensor minSensor = new Sensor();
