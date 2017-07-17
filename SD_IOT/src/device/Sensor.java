@@ -11,6 +11,7 @@ public class Sensor {
 	private double x; // x coordinate
 	private double y; // y coordinate
 	private double cost; // energy cost
+	private double discussionCost; // discussion cost
 	private double size; // flow size
 	private int association; // associate with a BS
 	private Set<Target> coverage; // targets covered by the sensor
@@ -75,6 +76,14 @@ public class Sensor {
 		this.cost = cost;
 	}
 
+	public double getDiscussionCost() {
+		return discussionCost;
+	}
+
+	public void setDiscussionCost(double discussionCost) {
+		this.discussionCost = discussionCost;
+	}
+
 	public double getSize() {
 		return size;
 	}
@@ -94,6 +103,10 @@ public class Sensor {
 	// get targets covered by the sensor
 	public Set<Target> getCoverage() {
 		return Collections.unmodifiableSet(coverage);
+	}
+	
+	public void setCoverage(Set<Target> coverage) {
+		this.coverage = coverage;
 	}
 
 	public double calculateDistance(double x1, double y1, double x2, double y2) {
