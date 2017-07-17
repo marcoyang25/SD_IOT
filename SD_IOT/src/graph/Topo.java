@@ -5,7 +5,6 @@ import java.util.*;
 import org.jgrapht.*;
 import org.jgrapht.ext.*;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.generate.ScaleFreeGraphGenerator;
 import org.jgrapht.graph.*;
 
 public class Topo {
@@ -13,68 +12,6 @@ public class Topo {
 
 	private Topo() {
 	}
-
-	public static SimpleGraph<Vertex, DefaultEdge> createRandomGraph(Vertices vertices, int switch_size, int bs_size) {
-		int nodescreated = 1; // BSs and MECs created
-		boolean fail = true;
-
-		// Create the graph object
-		SimpleGraph<Vertex, DefaultEdge> g = new SimpleGraph<>(DefaultEdge.class);
-		// Create the ScaleFreeGraphGenerator object
-		ScaleFreeGraphGenerator<Vertex, DefaultEdge> ScaleFreeGenerator = new ScaleFreeGraphGenerator<>(switch_size);
-
-		// Create the VertexFactory so the generator can create vertices
-		VertexFactory<Vertex> vFactory = new VertexFactory<Vertex>() {
-			private int id = 51;
-
-			@Override
-			public Vertex createVertex() {
-				Vertex v = new Vertex(id, Type.SWITCH);
-				vertices.idToVertex.put(id, v);
-				vertices.switches.add(v);
-				id++;
-				return v;
-			}
-		};
-
-		// using ScaleFreeGraphGenerator
-		ScaleFreeGenerator.generateGraph(g, vFactory, null);
-
-		// add a cloud server and connect to switches
-		Vertex cloudServer = new Vertex(Vertex.CS_ID, Type.CLOUDSERVER);
-		g.addVertex(cloudServer);
-		vertices.idToVertex.put(Vertex.CS_ID, cloudServer);
-		fail = true;
-		do {
-			// randomly connecting with a switch which's degree is 1
-			Vertex sw = vertices.switches.get(random.nextInt(vertices.switches.size()));
-			if (g.degreeOf(sw) == 1) {
-				g.addEdge(cloudServer, sw);
-				fail = false;
-			}
-		} while (fail);
-
-		// add bs_size base stations and connect to switches
-		for (int i = 0; i < bs_size; i++) {
-			nodescreated++; // number of nodes created ++
-			Vertex baseStation = new Vertex(nodescreated, Type.BS);
-			g.addVertex(baseStation);
-			vertices.idToVertex.put(nodescreated, baseStation);
-			vertices.bs.add(baseStation);
-			fail = true;
-			do {
-				// randomly connecting with a switch which's degree is 1
-				Vertex sw = vertices.switches.get(random.nextInt(vertices.switches.size()));
-				if (g.degreeOf(sw) >= 1) {
-					g.addEdge(baseStation, sw);
-					fail = false;
-				}
-			} while (fail);
-		} // end for
-
-		return g;
-
-	} // end method createRandomGraph
 
 	public static double getEnergyConsumed(Vertex source, Vertex sink, double size,
 			DijkstraShortestPath<Vertex, DefaultEdge> d) {
