@@ -2,6 +2,9 @@ package device;
 
 import java.util.Set;
 import java.util.HashSet;
+import social.Social;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
 public class SetCover {
 	private SetCover() {
@@ -58,17 +61,90 @@ public class SetCover {
 		sensorsAvailable.remove(maxSensor);
 		return S;
 	} // end method selectMax
-	
-	public static Sensor ESRS(Request request, Sensors sensors) {
-		final Set<Target> X = new HashSet<>(request.getLocations());
+
+	public static Sensor ESRS(Targets targets, Sensors sensors, DijkstraShortestPath<Integer, DefaultEdge> d) {
+		final Set<Target> X = new HashSet<>(targets.values());
 		final Set<Sensor> F = new HashSet<>(sensors.values());
-		return null;
-	}
+		Set<Target> U = new HashSet<>(X); // U = X
+		Set<Target> S = new HashSet<>();
+		Set<Set<Target>> e = new HashSet<>(); // e = empty set
+		Set<Sensor> sensorsSelected = new HashSet<>();
+		Set<Sensor> sensorsAvailable = new HashSet<>(F);
 
-	private static Set<Target> selectMinCost(Set<Sensor> sensorsAvailable, Set<Target> U, Set<Sensor> sensorsSelected) {
-		Sensor minSensor = new Sensor();
+		
 
-		/* select an S which is a member of F that minimize (cost / |S ∩ U|) */
+		// deciding host
+		S = selectMinTransmissionCost(sensorsAvailable, U, sensorsSelected);
+		
+		// the host of the sensor group
+		Sensor host = null;
+		// there's only host in sensorsSeleced
+		for(Sensor sensor: sensorsSelected){
+			host = sensor;
+		}
+		// System.out.println(host);
+		
+		/* U = U - S */
+		simpleRemove(U, S, e);
+		
+		// the host do not have discussion cost	
+		host.setDiscussionCost(0);
+		calculateSensorsDiscussionCost(host, sensorsAvailable, d);
+
+		/* while U != empty set */
+		while (!U.isEmpty() && !sensorsAvailable.isEmpty()) {
+			if ((S = selectMinCost(sensorsAvailable, U, sensorsSelected, d)) != null) {
+				/* U = U - S */
+				simpleRemove(U, S, e);
+			} else {
+				// no solution
+				return null;
+			}
+		}
+
+		// group cost
+		Sensor sensorGroup = new Sensor();
+		sensorGroup.setCost(calculateGroupCost(sensorsSelected, d));
+		sensorGroup.setCoverage(new HashSet<>(targets.values()));
+
+		if (!checkCorrectness(X, e)) {
+			System.err.println("Sensor(s) Not Covered!");
+			return null;
+		}
+
+		return sensorGroup;
+	} // end method ESRS
+
+	private static Set<Target> selectMinTransmissionCost(Set<Sensor> sensorsAvailable, Set<Target> U,
+			Set<Sensor> sensorsSelected) {
+		Sensor minSensor = null;
+		
+		// select an S which is a member of F such that |S ∩ U| > 0
+		// and minimize S' transmission cost to cloud server
+		double minEnergy = Double.MAX_VALUE;
+		Set<Target> S = new HashSet<>();
+		for (Sensor sensor : sensorsAvailable) {
+			/* initialize S */
+			Set<Target> intersection = new HashSet<>(sensor.getCoverage());
+			intersection.retainAll(U); // S ∩ U
+			if (sensor.getCost() <= minEnergy && intersection.size() > 0) {
+				minEnergy = sensor.getCost();
+				S = intersection;
+				minSensor = sensor;
+			}
+		}
+		sensorsSelected.add(minSensor);
+		sensorsAvailable.remove(minSensor);
+		return S;
+	} // end method selectMinTransmissionCost
+
+	private static Set<Target> selectMinCost(Set<Sensor> sensorsAvailable, Set<Target> U, Set<Sensor> sensorsSelected,
+			DijkstraShortestPath<Integer, DefaultEdge> d) {
+		Sensor minSensor = null;
+
+		// select an S which is a member of F that minimize
+		// ( discussionCost / |S ∩ U| )
+
 		double min = Double.MAX_VALUE;
 		Set<Target> S = new HashSet<>();
 		for (Sensor sensor : sensorsAvailable) {
@@ -79,21 +155,46 @@ public class SetCover {
 				// covering 0 target
 				continue;
 			}
-			if ((sensor.getCost() / intersection.size()) <= min) {
-				min = sensor.getCost() / intersection.size();
+			if ((sensor.getDiscussionCost() / intersection.size()) <= min
+					&& Social.hasRelationship(sensor.getId(), sensorsSelected, d)) {
+				min = sensor.getDiscussionCost() / intersection.size();
 				S = intersection;
 				minSensor = sensor;
 			}
 		}
-		sensorsSelected.add(minSensor);
-		sensorsAvailable.remove(minSensor);
-		return S;
+		// no sensor selected in this round
+		if (min == Double.MAX_VALUE) {
+			return null;
+		} else {
+			sensorsSelected.add(minSensor);
+			sensorsAvailable.remove(minSensor);
+			return S;
+		}
 	} // end method selectMinCost
+
+	// calculate discussion cost for each sensor
+	private static void calculateSensorsDiscussionCost(Sensor host, Set<Sensor> sensorsAvailable,
+			DijkstraShortestPath<Integer, DefaultEdge> d) {
+		for (Sensor sensor : sensorsAvailable) {
+			System.out.println(sensor.getId());
+			System.out.println(host.getId());
+			sensor.setDiscussionCost(Social.calculateDiscussionCost(sensor.getId(), host.getId(), d));
+		}
+	} // end method calculateSensorsDiscussionCost
+
+	private static double calculateGroupCost(Set<Sensor> sensorsSelected,
+			DijkstraShortestPath<Integer, DefaultEdge> d) {
+		double cost = 0;
+		for (Sensor sensor : sensorsSelected) {
+			cost += sensor.getDiscussionCost();
+		}
+		return cost;
+	} // end method calculateGroupCost
 
 	private static void simpleRemove(Set<Target> U, Set<Target> S, Set<Set<Target>> e) {
 		U.removeAll(S); // U = U - S
 		e.add(S); // e = e ∪ {S}
-	}
+	} // end method simpleRemove
 
 	private static boolean checkCorrectness(Set<Target> X, Set<Set<Target>> e) {
 		Set<Target> covered = new HashSet<>();
