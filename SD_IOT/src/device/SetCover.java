@@ -71,39 +71,42 @@ public class SetCover {
 		Set<Sensor> sensorsSelected = new HashSet<>();
 		Set<Sensor> sensorsAvailable = new HashSet<>(F);
 
-		
-
-		// deciding host
+		// selecting sensor with minimum transmission cost
 		S = selectMinTransmissionCost(sensorsAvailable, U, sensorsSelected);
+		/* U = U - S */
+		simpleRemove(U, S, e);
 		
 		// the host of the sensor group
 		Sensor host = null;
-		// there's only host in sensorsSeleced
+		// there's only host in sensorsSeleced now
 		for(Sensor sensor: sensorsSelected){
 			host = sensor;
 		}
 		// System.out.println(host);
-		
-		/* U = U - S */
-		simpleRemove(U, S, e);
-		
 		// the host do not have discussion cost	
 		host.setDiscussionCost(0);
+		// calculate each sensor's discussion cost
 		calculateSensorsDiscussionCost(host, sensorsAvailable, d);
 
 		/* while U != empty set */
 		while (!U.isEmpty() && !sensorsAvailable.isEmpty()) {
-			if ((S = selectMinCost(sensorsAvailable, U, sensorsSelected, d)) != null) {
+			if ((S = selectMinDiscussionCost(sensorsAvailable, U, sensorsSelected, d)) != null) {
 				/* U = U - S */
 				simpleRemove(U, S, e);
 			} else {
 				// no solution
+				System.out.println("ESRS no solution");
 				return null;
 			}
 		}
 
-		// group cost
+		// setting sensor group's cost and coverage
 		Sensor sensorGroup = new Sensor();
+		System.out.println("sensorsSelected in ESRS:");
+		for(Sensor s : sensorsSelected) {
+			System.out.print(s + "  ");
+			System.out.println(s.getCoverage());
+		}
 		sensorGroup.setCost(calculateGroupCost(sensorsSelected, d));
 		sensorGroup.setCoverage(new HashSet<>(targets.values()));
 
@@ -138,7 +141,7 @@ public class SetCover {
 		return S;
 	} // end method selectMinTransmissionCost
 
-	private static Set<Target> selectMinCost(Set<Sensor> sensorsAvailable, Set<Target> U, Set<Sensor> sensorsSelected,
+	private static Set<Target> selectMinDiscussionCost(Set<Sensor> sensorsAvailable, Set<Target> U, Set<Sensor> sensorsSelected,
 			DijkstraShortestPath<Integer, DefaultEdge> d) {
 		Sensor minSensor = null;
 
@@ -176,8 +179,6 @@ public class SetCover {
 	private static void calculateSensorsDiscussionCost(Sensor host, Set<Sensor> sensorsAvailable,
 			DijkstraShortestPath<Integer, DefaultEdge> d) {
 		for (Sensor sensor : sensorsAvailable) {
-			System.out.println(sensor.getId());
-			System.out.println(host.getId());
 			sensor.setDiscussionCost(Social.calculateDiscussionCost(sensor.getId(), host.getId(), d));
 		}
 	} // end method calculateSensorsDiscussionCost
