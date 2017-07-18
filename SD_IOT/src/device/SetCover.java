@@ -62,8 +62,8 @@ public class SetCover {
 		return S;
 	} // end method selectMax
 
-	public static Sensor ESRS(Targets targets, Sensors sensors, DijkstraShortestPath<Integer, DefaultEdge> d) {
-		final Set<Target> X = new HashSet<>(targets.values());
+	public static Sensor ESRS(Set<Target> targets, Sensors sensors, DijkstraShortestPath<Integer, DefaultEdge> d) {
+		final Set<Target> X = new HashSet<>(targets);
 		final Set<Sensor> F = new HashSet<>(sensors.values());
 		Set<Target> U = new HashSet<>(X); // U = X
 		Set<Target> S = new HashSet<>();
@@ -108,11 +108,11 @@ public class SetCover {
 			System.out.println(s.getCoverage());
 		}
 		sensorGroup.setCost(calculateGroupCost(sensorsSelected, d));
-		sensorGroup.setCoverage(new HashSet<>(targets.values()));
+		sensorGroup.setCoverage(new HashSet<>(targets));
 
 		if (!checkCorrectness(X, e)) {
 			System.err.println("Sensor(s) Not Covered!");
-			return null;
+			System.exit(-1);
 		}
 
 		return sensorGroup;
@@ -173,7 +173,7 @@ public class SetCover {
 			sensorsAvailable.remove(minSensor);
 			return S;
 		}
-	} // end method selectMinCost
+	} // end method selectMinDiscussionCost
 
 	// calculate discussion cost for each sensor
 	private static void calculateSensorsDiscussionCost(Sensor host, Set<Sensor> sensorsAvailable,
@@ -191,6 +191,60 @@ public class SetCover {
 		}
 		return cost;
 	} // end method calculateGroupCost
+	
+	public static Set<Sensor> greedy(Targets targets, Sensors sensors, Set<Sensor> groups) {
+		final Set<Target> X = new HashSet<>(targets.values());
+		final Set<Sensor> F = new HashSet<>(sensors.values());
+		Set<Sensor> G = new HashSet<>(groups);
+		Set<Target> U = new HashSet<>(X); // U = X
+		Set<Target> S = new HashSet<>();
+		Set<Set<Target>> e = new HashSet<>(); // e = empty set
+		Set<Sensor> sensorsSelected = new HashSet<>();
+		G.addAll(F); // G = F ∪ G
+		// sensors and groups
+		Set<Sensor> sensorsAvailable = new HashSet<>(G);
+
+		/* while U != empty set */
+		while (!U.isEmpty() && !sensorsAvailable.isEmpty()) {
+			S = selectMinCost(sensorsAvailable, U, sensorsSelected);
+			/* U = U - S */
+			simpleRemove(U, S, e);
+		}
+		if (!U.isEmpty() && sensorsAvailable.isEmpty()) {
+			// no solution
+			return null;
+		}
+		if (!checkCorrectness(X, e)) {
+			System.err.println("Sensor(s) Not Covered!");
+			System.exit(-1);
+		}
+		return sensorsSelected; // return all sensors selected
+	} // end method greedy
+	
+	private static Set<Target> selectMinCost(Set<Sensor> sensorsAvailable, Set<Target> U, Set<Sensor> sensorsSelected) {
+		Sensor minSensor = null;
+
+		/* select an S which is a member of F that minimize (cost / |S ∩ U|) */
+		double min = Double.MAX_VALUE;
+		Set<Target> S = new HashSet<>();
+		for (Sensor sensor : sensorsAvailable) {
+			/* initialize S */
+			Set<Target> intersection = new HashSet<>(sensor.getCoverage());
+			intersection.retainAll(U); // S ∩ U
+			if (intersection.size() == 0) {
+				// covering 0 target
+				continue;
+			}
+			if ((sensor.getCost() / intersection.size()) <= min) {
+				min = sensor.getCost() / intersection.size();
+				S = intersection;
+				minSensor = sensor;
+			}
+		}
+		sensorsSelected.add(minSensor);
+		sensorsAvailable.remove(minSensor);
+		return S;
+	} // end method selectMinCost
 
 	private static void simpleRemove(Set<Target> U, Set<Target> S, Set<Set<Target>> e) {
 		U.removeAll(S); // U = U - S
