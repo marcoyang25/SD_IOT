@@ -20,14 +20,7 @@ public class Sensor {
 	private final Random angle = new Random();
 
 	public Sensor() {
-	}
-
-	// for VirtualSensor
-	public Sensor(Sensor sensor) {
-		this.setID();
-		this.coverage = new HashSet<>(sensor.getCoverage());
-		this.cost = 0;
-		this.size = 1;
+		this.id = ++count;
 	}
 
 	public Sensor(Targets targets) {
