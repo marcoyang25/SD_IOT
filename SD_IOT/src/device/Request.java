@@ -10,6 +10,7 @@ public class Request {
 
 	public Request() {
 		this.id = ++count;
+		this.locations = new HashSet<>();
 	}
 
 	public int getId() {
