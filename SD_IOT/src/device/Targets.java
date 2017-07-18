@@ -4,9 +4,8 @@ import java.util.*;
 
 public class Targets extends HashMap<Integer, Target> {
 	public Targets(int n) {
-		Target t;
 		for (int i = 0; i < n; i++) {
-			t = new Target();
+			Target t = new Target();
 			this.put(t.getId(), t);
 		}
 	}
