@@ -10,18 +10,20 @@ public class Target {
 	private double threshold; // probability that the target covered by sensors
 								// must greater than this value
 	private Set<Sensor> coveredBy;
+	private Set<Request> requestedBy;
 
 	private final Random radius = new Random();
 	private final Random angle = new Random();
 
 	public Target() {
-		this.setId();
+		this.id = ++count;
 		// initialize x and y coordinate
 		double r = Sensor.MAX_RADIUS * radius.nextDouble();
 		double a = 2 * Math.PI * angle.nextDouble();
 		this.x = r * Math.cos(a);
 		this.y = r * Math.sin(a);
 		this.coveredBy = new HashSet<>();
+		this.requestedBy = new HashSet<>();
 	}
 
 	private synchronized void setId() {
@@ -54,6 +56,14 @@ public class Target {
 
 	public Set<Sensor> getCoverdBy() {
 		return Collections.unmodifiableSet(coveredBy);
+	}
+	
+	public void addRequestedBy(Request request) {
+		requestedBy.add(request);
+	}
+
+	public Set<Request> getRequestedBy() {
+		return Collections.unmodifiableSet(requestedBy);
 	}
 
 	@Override
