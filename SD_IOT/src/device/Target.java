@@ -29,6 +29,10 @@ public class Target {
 	private synchronized void setId() {
 		this.id = ++count;
 	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public int getId() {
 		return id;
