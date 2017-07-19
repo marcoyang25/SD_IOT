@@ -11,8 +11,8 @@ public class SetCover {
 	}
 
 	/**
-	 * return all sensors selected by baseline setcover, return null if no
-	 * solution existed
+	 * Return all sensors selected by baseline set cover, return null if no
+	 * solution existed.
 	 */
 	public static Set<Sensor> setcover(Targets targets, Sensors sensors) {
 		final Set<Target> X = new HashSet<>(targets.values());
