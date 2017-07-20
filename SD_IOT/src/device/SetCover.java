@@ -192,8 +192,8 @@ public class SetCover {
 		return cost;
 	} // end method calculateGroupCost
 	
-	public static Set<Sensor> greedy(Targets targets, Sensors sensors, Set<Sensor> groups) {
-		final Set<Target> X = new HashSet<>(targets.values());
+	public static Set<Sensor> greedy(Set<Target> targets, Sensors sensors, Set<Sensor> groups) {
+		final Set<Target> X = new HashSet<>(targets);
 		final Set<Sensor> F = new HashSet<>(sensors.values());
 		Set<Sensor> G = new HashSet<>(groups);
 		Set<Target> U = new HashSet<>(X); // U = X
