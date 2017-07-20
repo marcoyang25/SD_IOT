@@ -10,15 +10,26 @@ public class Requests extends HashMap<Integer, Request> {
 		}
 	}
 
+	// generate virtual targets for each request
 	public static void generateVirtualTargets(Requests requests) {
 		for (Request request : requests.values()) {
-			Set<VirtualTarget> virtualTargets = new HashSet<>();
+			Set<VirtualTarget> locations = new HashSet<>();
 			for (Target target : request.getLocations()) {
 				VirtualTarget v = new VirtualTarget(target.getId(), request.getId());
-				virtualTargets.add(v);
+				locations.add(v);
 			}
-			request.setLocations(virtualTargets);
+			request.setVirtualLocations(locations);
 		}
+	}
+
+	/** Union all virtual locations of each request. */
+	public static Set<Target> getAllVirtualTargets(Requests requests) {
+		Set<Target> VirtualTargetsToCover = new HashSet<>();
+		for (Request request : requests.values()) {
+			// VirtualTargetsToCover ∪ request.getLocations
+			VirtualTargetsToCover.addAll(request.getLocations());
+		}
+		return VirtualTargetsToCover;
 	}
 
 	@Override
