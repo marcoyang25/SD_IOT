@@ -25,6 +25,11 @@ public class Request {
 	public Set<Target> getLocations() {
 		return Collections.unmodifiableSet(locations);
 	}
+	
+	// replace targets in locations with virtual targets
+	public void setLocations(Set<VirtualTarget> virtualTargets) {
+		locations = new HashSet<>(virtualTargets);
+	}
 
 	@Override
 	public int hashCode() {
