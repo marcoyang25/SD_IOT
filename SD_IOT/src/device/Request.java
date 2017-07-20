@@ -21,14 +21,24 @@ public class Request {
 	public void AddLocation(Target target) {
 		locations.add(target);
 	}
-	
+
 	public Set<Target> getLocations() {
 		return Collections.unmodifiableSet(locations);
 	}
-	
+
 	// replace targets in locations with virtual targets
-	public void setLocations(Set<VirtualTarget> virtualTargets) {
+	public void setVirtualLocations(Set<VirtualTarget> virtualTargets) {
 		locations = new HashSet<>(virtualTargets);
+	}
+
+	// return a virtual target with the same target ID
+	public VirtualTarget findVirtualTarget(Target target) {
+		for (Target virtualTarget : locations) {
+			if (virtualTarget.getId() == target.getId()) {
+				return (VirtualTarget) virtualTarget;
+			}
+		}
+		return null;
 	}
 
 	@Override
