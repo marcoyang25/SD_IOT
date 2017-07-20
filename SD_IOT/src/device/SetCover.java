@@ -108,7 +108,7 @@ public class SetCover {
 			System.out.println(s.getCoverage());
 		}
 		sensorGroup.setCost(calculateGroupCost(sensorsSelected, d));
-		sensorGroup.setCoverage(new HashSet<>(targets));
+		sensorGroup.setCoverage(targets);
 
 		if (!checkCorrectness(X, e)) {
 			System.err.println("Sensor(s) Not Covered!");
