@@ -97,9 +97,13 @@ public class Sensor {
 	public Set<Target> getCoverage() {
 		return Collections.unmodifiableSet(coverage);
 	}
-	
+
 	public void setCoverage(Set<Target> coverage) {
-		this.coverage = coverage;
+		this.coverage = new HashSet<>(coverage);
+	}
+
+	public void setVirtualTargetsCoverage(Set<VirtualTarget> coverage) {
+		this.coverage = new HashSet<>(coverage);
 	}
 
 	public double calculateDistance(double x1, double y1, double x2, double y2) {
