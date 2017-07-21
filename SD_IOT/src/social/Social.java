@@ -52,4 +52,27 @@ public class Social {
 		return g;
 	} // end method createIntGraph
 
+	public static Graph<Integer, DefaultEdge> createRandomGraph(List<Sensor> sensors) {
+		Graph<Integer, DefaultEdge> g = new SimpleGraph<>(DefaultEdge.class);
+		final Random random = new Random();
+		// create vertices
+		for (Sensor sensor : sensors) {
+			g.addVertex(sensor.getId());
+		}
+		// for each vertex, randomly add some edges
+		for (int v0 : g.vertexSet()) {
+			List<Integer> vertices = new ArrayList<>(g.vertexSet());
+			// remove itself
+			vertices.remove(v0);
+			// shuffle the list
+			Collections.shuffle(vertices);
+			// select some vertices from list
+			for (int i = 0, degree = random.nextInt(vertices.size()); i < degree; i++) {
+				int v1 = vertices.get(i);
+				g.addEdge(v0, v1);
+			}
+		}
+		return g;
+	} // end method createRandomGraph
+
 }
