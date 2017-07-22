@@ -107,7 +107,7 @@ public class SetCover {
 			System.out.print(s + "  ");
 			System.out.println(s.getCoverage());
 		}
-		sensorGroup.setCost(calculateGroupCost(sensorsSelected, d));
+		sensorGroup.setCost(calculateGroupCost(host, sensorsSelected));
 		sensorGroup.setCoverage(targets);
 
 		if (!checkCorrectness(X, e)) {
@@ -183,12 +183,13 @@ public class SetCover {
 		}
 	} // end method calculateSensorsDiscussionCost
 
-	private static double calculateGroupCost(Set<Sensor> sensorsSelected,
-			DijkstraShortestPath<Integer, DefaultEdge> d) {
+	private static double calculateGroupCost(Sensor host, Set<Sensor> sensorsSelected) {
 		double cost = 0;
 		for (Sensor sensor : sensorsSelected) {
 			cost += sensor.getDiscussionCost();
 		}
+		// adding host's cost to cloud server
+		cost += host.getCost();
 		return cost;
 	} // end method calculateGroupCost
 	
