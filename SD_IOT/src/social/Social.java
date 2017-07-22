@@ -10,7 +10,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import device.Sensor;
 
 public class Social {
-	public static final int GAMMA = 2;
+	public static final double GAMMA = 0.5;
 
 	private Social() {
 	}
