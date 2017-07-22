@@ -83,14 +83,10 @@ public class SetCover {
 			host = sensor;
 		}
 		// System.out.println(host);
-		// the host do not have discussion cost
-		host.setDiscussionCost(0);
-		// calculate each sensor's discussion cost
-		calculateSensorsDiscussionCost(host, sensorsAvailable, d);
 
 		/* while U != empty set */
 		while (!U.isEmpty() && !sensorsAvailable.isEmpty()) {
-			if ((S = selectMinDiscussionCost(sensorsAvailable, U, sensorsSelected, d)) != null) {
+			if ((S = selectMaxWithRelation(sensorsAvailable, U, sensorsSelected, d)) != null) {
 				/* U = U - S */
 				simpleRemove(U, S, e);
 			} else {
