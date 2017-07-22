@@ -184,13 +184,8 @@ public class SetCover {
 	} // end method calculateSensorsDiscussionCost
 
 	private static double calculateGroupCost(Sensor host, Set<Sensor> sensorsSelected) {
-		double cost = 0;
-		for (Sensor sensor : sensorsSelected) {
-			cost += sensor.getDiscussionCost();
-		}
-		// adding host's cost to cloud server
-		cost += host.getCost();
-		return cost;
+		// host.getCost() = host's cost to cloud server
+		return sensorsSelected.size() * Social.GAMMA + host.getCost();
 	} // end method calculateGroupCost
 	
 	public static Set<Sensor> greedy(Set<Target> targets, Sensors sensors, Set<Sensor> groups) {
