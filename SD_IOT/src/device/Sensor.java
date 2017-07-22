@@ -5,6 +5,7 @@ import java.util.*;
 public class Sensor {
 	public static final double MAX_RADIUS = 100;
 	public static final double MAX_DIS_BETWEEN = 12; // maximum distance between
+	public static final double SENSOR_TRANSMISSION_COST = 0.2;
 
 	private int id; // unique ID
 	private static int count = 0;
