@@ -19,7 +19,6 @@ public class Task implements Runnable {
 		Sensors sensors;
 		Requests requests;
 		Set<Sensor> groups = new HashSet<>();
-		Set<Sensor> sensorsSelected;
 
 		// generating sensors and targets until hasSensorCover is satisfied
 		do {
@@ -55,7 +54,7 @@ public class Task implements Runnable {
 		// compute Dijkstra shortest path of social graph
 		DijkstraShortestPath<Integer, DefaultEdge> socialDijkstra = new DijkstraShortestPath<>(socialGraph);
 
-		// for each request
+		// for each request, do ESRS
 		for (Request request : requests.values()) {
 			Sensor ESRSselected;
 			// this request do not have any location
@@ -64,6 +63,8 @@ public class Task implements Runnable {
 			}
 			// ESRS
 			if ((ESRSselected = SetCover.ESRS(request.getLocations(), sensors, socialDijkstra)) != null) {
+				// replace sensor group's coverage with virtual targets
+				Sensors.replaceWithVirtualTargets(ESRSselected, request);
 				// add this sensor group to groups
 				groups.add(ESRSselected);
 				System.out.println("Setcover:" + ESRSselected);
@@ -73,10 +74,22 @@ public class Task implements Runnable {
 			}
 		} // end for
 
+		// generate virtual targets
+		Requests.generateVirtualTargets(requests);
+		// replace each's coverage with virtual targets
+		Sensors.replaceWithVirtualTargets(sensors, requests);
+		// union all virtual locations of each request
+		Set<Target> virtualTargets = Requests.getAllVirtualTargets(requests);
+		System.out.println("virtualTargets: " + virtualTargets);
+
 		System.out.println("groups: " + groups);
 		// -------------------------------------------Greedy---------------------------------------------------
-		if ((sensorsSelected = SetCover.greedy(targets, sensors, groups)) != null) {
-			System.out.println("Greedy selects: " + sensorsSelected);
+		Set<Sensor> sensorsSelected;
+		if ((sensorsSelected = SetCover.greedy(virtualTargets, sensors, groups)) != null) {
+			for (Sensor s : sensorsSelected) {
+				System.out.print(s + " ");
+				System.out.println(s.getCoverage());
+			}
 		} else {
 			System.err.println("Set cover no solution");
 			System.exit(-1);
