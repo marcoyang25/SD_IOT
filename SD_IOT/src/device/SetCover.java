@@ -143,7 +143,7 @@ public class SetCover {
 
 		// select an S which is a member of F that maximize |S ∩ U|
 		// and has relationship with host
-		double max = -1;
+		double max = 1; // at least cover one target
 		Set<Target> S = new HashSet<>();
 		for (Sensor sensor : sensorsAvailable) {
 			/* initialize S */
@@ -156,7 +156,7 @@ public class SetCover {
 			}
 		}
 		// no sensor selected in this round
-		if (max == -1) {
+		if (maxSensor == null) {
 			return null;
 		} else {
 			sensorsSelected.add(maxSensor);
