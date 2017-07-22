@@ -10,13 +10,13 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import device.Sensor;
 
 public class Social {
-	public static final int ALPHA = 2;
+	public static final int GAMMA = 2;
 
 	private Social() {
 	}
 
 	public static double calculateDiscussionCost(int source, int sink, DijkstraShortestPath<Integer, DefaultEdge> d) {
-		return d.getPathWeight(source, sink) * ALPHA * Sensor.SENSOR_TRANSMISSION_COST;
+		return d.getPathWeight(source, sink) * GAMMA * Sensor.SENSOR_TRANSMISSION_COST;
 	}
 
 	// if source has a relationship with sensors selected in set cover
@@ -73,5 +73,27 @@ public class Social {
 		}
 		return g;
 	} // end method createRandomGraph
+
+	public static Graph<Integer, DefaultEdge> createDistanceGraph(List<Sensor> sensors) {
+		Graph<Integer, DefaultEdge> g = new SimpleGraph<>(DefaultEdge.class);
+		// create vertices
+		for (Sensor sensor : sensors) {
+			g.addVertex(sensor.getId());
+		}
+		// for each vertex, add some edges to vertices based on distance
+		for (Sensor s0 : sensors) {
+			for (Sensor s1 : sensors) {
+				if (!s0.equals(s1)
+						&& calculateDistance(s0.getX(), s0.getY(), s1.getX(), s1.getY()) < Sensor.MAX_DIS_BETWEEN) {
+					g.addEdge(s0.getId(), s1.getId());
+				}
+			}
+		}
+		return g;
+	} // end method createDistanceGraph
+
+	public static double calculateDistance(double x1, double y1, double x2, double y2) {
+		return Math.sqrt(Math.pow((x1 - x2), 2.0) + Math.pow((y1 - y2), 2.0));
+	} // end method calculateDistance
 
 }
