@@ -75,15 +75,15 @@ public class SetCover {
 		S = selectMinTransmissionCost(sensorsAvailable, U, sensorsSelected);
 		/* U = U - S */
 		simpleRemove(U, S, e);
-		
+
 		// the host of the sensor group
 		Sensor host = null;
 		// there's only host in sensorsSeleced now
-		for(Sensor sensor: sensorsSelected){
+		for (Sensor sensor : sensorsSelected) {
 			host = sensor;
 		}
 		// System.out.println(host);
-		// the host do not have discussion cost	
+		// the host do not have discussion cost
 		host.setDiscussionCost(0);
 		// calculate each sensor's discussion cost
 		calculateSensorsDiscussionCost(host, sensorsAvailable, d);
@@ -103,7 +103,7 @@ public class SetCover {
 		// setting sensor group's cost and coverage
 		Sensor sensorGroup = new Sensor();
 		System.out.println("sensorsSelected in ESRS:");
-		for(Sensor s : sensorsSelected) {
+		for (Sensor s : sensorsSelected) {
 			System.out.print(s + "  ");
 			System.out.println(s.getCoverage());
 		}
@@ -121,7 +121,7 @@ public class SetCover {
 	private static Set<Target> selectMinTransmissionCost(Set<Sensor> sensorsAvailable, Set<Target> U,
 			Set<Sensor> sensorsSelected) {
 		Sensor minSensor = null;
-		
+
 		// select an S which is a member of F such that |S ∩ U| > 0
 		// and minimize S' transmission cost to cloud server
 		double minEnergy = Double.MAX_VALUE;
@@ -141,39 +141,33 @@ public class SetCover {
 		return S;
 	} // end method selectMinTransmissionCost
 
-	private static Set<Target> selectMinDiscussionCost(Set<Sensor> sensorsAvailable, Set<Target> U, Set<Sensor> sensorsSelected,
-			DijkstraShortestPath<Integer, DefaultEdge> d) {
-		Sensor minSensor = null;
+	private static Set<Target> selectMaxWithRelation(Set<Sensor> sensorsAvailable, Set<Target> U,
+			Set<Sensor> sensorsSelected, DijkstraShortestPath<Integer, DefaultEdge> d) {
+		Sensor maxSensor = null;
 
-		// select an S which is a member of F that minimize
-		// ( discussionCost / |S ∩ U| )
-
-		double min = Double.MAX_VALUE;
+		// select an S which is a member of F that maximize |S ∩ U|
+		// and has relationship with host
+		double max = -1;
 		Set<Target> S = new HashSet<>();
 		for (Sensor sensor : sensorsAvailable) {
 			/* initialize S */
 			Set<Target> intersection = new HashSet<>(sensor.getCoverage());
 			intersection.retainAll(U); // S ∩ U
-			if (intersection.size() == 0) {
-				// covering 0 target
-				continue;
-			}
-			if ((sensor.getDiscussionCost() / intersection.size()) <= min
-					&& Social.hasRelationship(sensor.getId(), sensorsSelected, d)) {
-				min = sensor.getDiscussionCost() / intersection.size();
+			if (intersection.size() >= max && Social.hasRelationship(sensor.getId(), sensorsSelected, d)) {
+				max = intersection.size();
 				S = intersection;
-				minSensor = sensor;
+				maxSensor = sensor;
 			}
 		}
 		// no sensor selected in this round
-		if (min == Double.MAX_VALUE) {
+		if (max == -1) {
 			return null;
 		} else {
-			sensorsSelected.add(minSensor);
-			sensorsAvailable.remove(minSensor);
+			sensorsSelected.add(maxSensor);
+			sensorsAvailable.remove(maxSensor);
 			return S;
 		}
-	} // end method selectMinDiscussionCost
+	} // end method selectMaxWithRelation
 
 	// calculate discussion cost for each sensor
 	private static void calculateSensorsDiscussionCost(Sensor host, Set<Sensor> sensorsAvailable,
@@ -187,7 +181,7 @@ public class SetCover {
 		// host.getCost() = host's cost to cloud server
 		return sensorsSelected.size() * Social.GAMMA + host.getCost();
 	} // end method calculateGroupCost
-	
+
 	public static Set<Sensor> greedy(Set<Target> targets, Sensors sensors, Set<Sensor> groups) {
 		final Set<Target> X = new HashSet<>(targets);
 		final Set<Sensor> F = new HashSet<>(sensors.values());
@@ -216,7 +210,7 @@ public class SetCover {
 		}
 		return sensorsSelected; // return all sensors selected
 	} // end method greedy
-	
+
 	private static Set<Target> selectMinCost(Set<Sensor> sensorsAvailable, Set<Target> U, Set<Sensor> sensorsSelected) {
 		Sensor minSensor = null;
 
