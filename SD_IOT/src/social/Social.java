@@ -11,13 +11,13 @@ import device.Sensor;
 
 public class Social {
 	public static final int ALPHA = 2;
-	public static final double TRANSMISSION_COST = 1;
+	public static final double SENSOR_TRANSMISSION_COST = 0.2;
 
 	private Social() {
 	}
 
 	public static double calculateDiscussionCost(int source, int sink, DijkstraShortestPath<Integer, DefaultEdge> d) {
-		return d.getPathWeight(source, sink) * ALPHA * TRANSMISSION_COST;
+		return d.getPathWeight(source, sink) * ALPHA * SENSOR_TRANSMISSION_COST;
 	}
 
 	// if source has a relationship with sensors selected in set cover
