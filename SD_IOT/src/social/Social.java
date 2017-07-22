@@ -59,7 +59,7 @@ public class Social {
 			g.addVertex(sensor.getId());
 		}
 		// for each vertex, randomly add some edges
-		for (int v0 : g.vertexSet()) {
+		for (Integer v0 : g.vertexSet()) {
 			List<Integer> vertices = new ArrayList<>(g.vertexSet());
 			// remove itself
 			vertices.remove(v0);
