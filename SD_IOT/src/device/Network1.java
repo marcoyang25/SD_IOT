@@ -34,12 +34,15 @@ public class Network1 implements Runnable {
 		List<Double> mss = new ArrayList<>();
 		List<Double> gmsc = new ArrayList<>();
 		List<Double> esrs = new ArrayList<>();
+		List<Double> groups_size = new ArrayList<>();
+		List<Double> sensors_selected_size = new ArrayList<>();
+		List<Double> groups_selected_size = new ArrayList<>();
 
 		Targets targets;
 		Sensors sensors;
 		Requests requests;
 		// save sensor groups
-		Set<Sensor> groups = new HashSet<>();
+		Set<Sensor> groups;
 		Set<Sensor> sensorsSelected;
 
 		Graph<Vertex, DefaultEdge> graph;
@@ -50,7 +53,7 @@ public class Network1 implements Runnable {
 		DijkstraShortestPath<Integer, DefaultEdge> socialDijkstra;
 
 		// running n times
-		for (int n = 0; n < 1; n++) {
+		for (int n = 0; n < 100; n++) {
 			// generating topology
 			graph = new SimpleGraph<>(DefaultEdge.class);
 			try {
@@ -61,7 +64,7 @@ public class Network1 implements Runnable {
 				e.printStackTrace();
 				System.exit(-1);
 			}
-			System.out.println(graph);
+			//System.out.println(graph);
 
 			// add vertices to list
 			vertices = new Vertices();
@@ -85,7 +88,7 @@ public class Network1 implements Runnable {
 				Vertex sw = vertices.switches.get(random.nextInt(vertices.switches.size()));
 				graph.addEdge(baseStation, sw);
 			}
-			System.out.println(graph);
+			//System.out.println(graph);
 
 			// compute Dijkstra shortest path of randomGraph
 			d = new DijkstraShortestPath<>(graph);
@@ -94,7 +97,7 @@ public class Network1 implements Runnable {
 			// generating sensors and targets until hasSensorCover is satisfied
 			do {
 				// System.out.println("Generating...");
-				targets = new Targets(3);
+				targets = new Targets(1000);
 				sensors = new Sensors(SENSORS_SIZE, targets);
 			} while (!Targets.hasSensorCover(targets));
 
@@ -152,7 +155,7 @@ public class Network1 implements Runnable {
 					graph.addEdge(mec, sw);
 				}
 			}
-			System.out.println(graph);
+			//System.out.println(graph);
 
 			// compute Dijkstra shortest path of randomGraph
 			d = new DijkstraShortestPath<>(graph);
@@ -160,15 +163,15 @@ public class Network1 implements Runnable {
 			// generating user requests
 			requests = new Requests(REQUESTS_SIZE);
 			// randomly select requests that request this target
-			Targets.generateRandomRequests(targets, requests, 2);
+			Requests.generateRandomTargets(requests, targets, 5, 10);
 
 			// print requests
-			for (Request request : requests.values()) {
+			/*for (Request request : requests.values()) {
 				System.out.println(request);
 				System.out.println(request.getLocations());
-			}
-			System.out.println(sensors);
-			System.out.println(targets);
+			}*/
+			//System.out.println("sensors: " + sensors);
+			//System.out.println(targets);
 
 			// for all sensors, calculate each energy cost
 			for (Sensor sensor : sensors.values()) {
@@ -185,13 +188,16 @@ public class Network1 implements Runnable {
 			}
 
 			// create a list of sensors
-			// so that generator can use it to create a complete social graph
+			// so that generator can use it to create a social graph
 			socialGraph = Social.createRandomGraph(new ArrayList<>(sensors.values()));
-			System.out.println(socialGraph);
+			//System.out.println("edge size: " + socialGraph.edgeSet().size());
 
 			// compute Dijkstra shortest path of social graph
-			socialDijkstra = new DijkstraShortestPath<>(socialGraph);
+			// socialDijkstra = new DijkstraShortestPath<>(socialGraph);
 
+			// initialize groups
+			groups = new HashSet<>();
+			
 			// for each request, do ESRS
 			for (Request request : requests.values()) {
 				Sensor ESRSselected;
@@ -200,14 +206,15 @@ public class Network1 implements Runnable {
 					continue;
 				}
 				// ESRS
-				if ((ESRSselected = SetCover.ESRS(request.getLocations(), sensors, socialDijkstra)) != null) {
+				if ((ESRSselected = SetCover.ESRS(request.getLocations(), sensors, socialGraph)) != null) {
 					// replace sensor group's coverage with virtual targets
 					Sensors.replaceWithVirtualTargets(ESRSselected, request);
 					// add this sensor group to groups
 					groups.add(ESRSselected);
-					System.out.println("Setcover:" + ESRSselected);
+					// System.out.println("Setcover:" + ESRSselected);
 				} else {
-					System.err.println("ESRS no solution");
+					// ESRS no solution
+					// System.out.println("ESRS no solution");
 					continue;
 				}
 			} // end for
@@ -220,28 +227,59 @@ public class Network1 implements Runnable {
 			
 			// union all virtual locations of each request
 			Set<Target> virtualTargets = Requests.getAllVirtualTargets(requests);
-			System.out.println("virtualTargets: " + virtualTargets);
-			System.out.println("groups: " + groups);
+			//System.out.println("virtualTargets: " + virtualTargets);
+				
+			
+			/*System.out.println("-----------------------------------------sensors:");
+			for(Sensor sensor : sensors.values()) {
+				System.out.print(sensor);
+				System.out.println("Cost:" + sensor.getCost());
+				System.out.println(sensor.getCoverage());
+			}
+			
+			System.out.println("------------------------------------------groups:");
+			for(Sensor sensor : groups) {
+				System.out.print(sensor);
+				System.out.println("Cost:" + sensor.getCost());
+				System.out.println(sensor.getCoverage());
+			}*/
 
-			// greedy
+			// *******************************greedy*********************************
+			// modify cost
+			for(Sensor sensor : sensors.values()) {
+				sensor.setCost(sensor.getCost() * 2);
+			}
 			if ((sensorsSelected = SetCover.greedy(virtualTargets, sensors, groups)) != null) {
-				for (Sensor s : sensorsSelected) {
-					System.out.print(s + " ");
-					System.out.print(s.getCoverage());
-					System.out.println(s.getCost());
-				}
+				Set<Sensor> groupSelected = new HashSet<>(sensorsSelected);
+				groupSelected.retainAll(groups);
+				
+				groups_size.add(Double.valueOf(groups.size()));
+				sensors_selected_size.add(Double.valueOf(sensorsSelected.size()));
+				groups_selected_size.add(Double.valueOf(groupSelected.size()));
+				
+				/*System.out.println("groups.size() " + groups.size());
+				System.out.println("sensorsSelected " + sensorsSelected.size());
+				System.out.println("groupSelected.size(): " + groupSelected.size());*/
 			} else {
-				System.err.println("Set cover no solution");
+				System.err.println("Greedy no solution");
 				System.exit(-1);
+			}
+			// reset cost
+			for(Sensor sensor : sensors.values()) {
+				sensor.setCost(sensor.getCost() / 2);
 			}
 			esrs.add(SetCover.computeTotalSelectedCost(sensorsSelected));
 			
 		} // end for
 		
 		// print result
-		System.out.println(name + " MSS-SPS= " + sum(mss) / mss.size());
-		System.out.println(name + " G-MSC= " + sum(gmsc) / gmsc.size());
-		System.out.println(name + " ESRS= " + sum(esrs) / esrs.size());
+		System.out.println(name + " groups.size(): " + sum(groups_size) / groups_size.size());
+		System.out.println(name + " sensorsSelected: " + sum(sensors_selected_size) / sensors_selected_size.size());
+		System.out.println(name + " groupSelected.size(): " + sum(groups_selected_size) / groups_selected_size.size());
+
+		System.out.println(name + " MSS-SPS = " + sum(mss) / mss.size());
+		System.out.println(name + " G-MSC = " + sum(gmsc) / gmsc.size());
+		System.out.println(name + " ESRS = " + sum(esrs) / esrs.size());
 		
 	} // end run()
 	
