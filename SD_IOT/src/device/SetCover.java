@@ -91,18 +91,13 @@ public class SetCover {
 				simpleRemove(U, S, e);
 			} else {
 				// no solution
-				System.out.println("ESRS no solution");
+				//System.out.println("ESRS no solution");
 				return null;
 			}
 		}
 
 		// setting sensor group's cost and coverage
 		Sensor sensorGroup = new Sensor();
-		System.out.println("sensorsSelected in ESRS:");
-		for (Sensor s : sensorsSelected) {
-			System.out.print(s + "  ");
-			System.out.println(s.getCoverage());
-		}
 		sensorGroup.setCost(calculateGroupCost(host, sensorsSelected));
 		sensorGroup.setCoverage(targets);
 
