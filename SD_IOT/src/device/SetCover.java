@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.HashSet;
 import social.Social;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
 public class SetCover {
@@ -62,7 +63,7 @@ public class SetCover {
 		return S;
 	} // end method selectMax
 
-	public static Sensor ESRS(Set<Target> targets, Sensors sensors, DijkstraShortestPath<Integer, DefaultEdge> d) {
+	public static Sensor ESRS(Set<Target> targets, Sensors sensors, Graph<Integer, DefaultEdge> graph) {
 		final Set<Target> X = new HashSet<>(targets);
 		final Set<Sensor> F = new HashSet<>(sensors.values());
 		Set<Target> U = new HashSet<>(X); // U = X
@@ -82,11 +83,10 @@ public class SetCover {
 		for (Sensor sensor : sensorsSelected) {
 			host = sensor;
 		}
-		// System.out.println(host);
 
 		/* while U != empty set */
 		while (!U.isEmpty() && !sensorsAvailable.isEmpty()) {
-			if ((S = selectMaxWithRelation(sensorsAvailable, U, sensorsSelected, d)) != null) {
+			if ((S = selectMaxWithRelation(sensorsAvailable, U, sensorsSelected, graph)) != null) {
 				/* U = U - S */
 				simpleRemove(U, S, e);
 			} else {
@@ -110,7 +110,6 @@ public class SetCover {
 			System.err.println("Sensor(s) Not Covered!");
 			System.exit(-1);
 		}
-
 		return sensorGroup;
 	} // end method ESRS
 
@@ -138,7 +137,7 @@ public class SetCover {
 	} // end method selectMinTransmissionCost
 
 	private static Set<Target> selectMaxWithRelation(Set<Sensor> sensorsAvailable, Set<Target> U,
-			Set<Sensor> sensorsSelected, DijkstraShortestPath<Integer, DefaultEdge> d) {
+			Set<Sensor> sensorsSelected, Graph<Integer, DefaultEdge> graph) {
 		Sensor maxSensor = null;
 
 		// select an S which is a member of F that maximize |S ∩ U|
@@ -149,7 +148,7 @@ public class SetCover {
 			/* initialize S */
 			Set<Target> intersection = new HashSet<>(sensor.getCoverage());
 			intersection.retainAll(U); // S ∩ U
-			if (intersection.size() >= max && Social.hasRelationship(sensor.getId(), sensorsSelected, d)) {
+			if (intersection.size() >= max && Social.hasRelationship(sensor.getId(), sensorsSelected, graph)) {
 				max = intersection.size();
 				S = intersection;
 				maxSensor = sensor;
