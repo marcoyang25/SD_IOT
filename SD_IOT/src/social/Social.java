@@ -10,7 +10,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import device.Sensor;
 
 public class Social {
-	public static final double GAMMA = 0.2;
+	public static final double GAMMA = 0.02;
 
 	private Social() {
 	}
@@ -66,7 +66,7 @@ public class Social {
 			// shuffle the list
 			Collections.shuffle(vertices);
 			// select some vertices from list
-			for (int i = 0, degree = random.nextInt(20) + 10; i < degree; i++) {
+			for (int i = 0, degree = random.nextInt(20) + 20; i < degree; i++) {
 				int v1 = vertices.get(i);
 				g.addEdge(v0, v1);
 			}
