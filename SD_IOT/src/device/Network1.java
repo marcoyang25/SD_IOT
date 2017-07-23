@@ -250,12 +250,12 @@ public class Network1 implements Runnable {
 				sensor.setCost(sensor.getCost() * 2);
 			}
 			if ((sensorsSelected = SetCover.greedy(virtualTargets, sensors, groups)) != null) {
-				Set<Sensor> groupSelected = new HashSet<>(sensorsSelected);
+				/*Set<Sensor> groupSelected = new HashSet<>(sensorsSelected);
 				groupSelected.retainAll(groups);
 				
 				groups_size.add(Double.valueOf(groups.size()));
 				sensors_selected_size.add(Double.valueOf(sensorsSelected.size()));
-				groups_selected_size.add(Double.valueOf(groupSelected.size()));
+				groups_selected_size.add(Double.valueOf(groupSelected.size()));*/
 				
 				/*System.out.println("groups.size() " + groups.size());
 				System.out.println("sensorsSelected " + sensorsSelected.size());
@@ -273,9 +273,9 @@ public class Network1 implements Runnable {
 		} // end for
 		
 		// print result
-		System.out.println(name + " groups.size(): " + sum(groups_size) / groups_size.size());
+		/*System.out.println(name + " groups.size(): " + sum(groups_size) / groups_size.size());
 		System.out.println(name + " sensorsSelected: " + sum(sensors_selected_size) / sensors_selected_size.size());
-		System.out.println(name + " groupSelected.size(): " + sum(groups_selected_size) / groups_selected_size.size());
+		System.out.println(name + " groupSelected.size(): " + sum(groups_selected_size) / groups_selected_size.size());*/
 
 		System.out.println(name + " MSS-SPS = " + sum(mss) / mss.size());
 		System.out.println(name + " G-MSC = " + sum(gmsc) / gmsc.size());
