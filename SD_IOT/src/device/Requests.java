@@ -10,6 +10,29 @@ public class Requests extends HashMap<Integer, Request> {
 		}
 	}
 
+	public static void generateRandomTargets(Requests requests, Targets targets, int start, int bound) {
+		final Random random = new Random();
+		for (Request request : requests.values()) {
+			int randomTargetsNumber = random.nextInt(bound) + start;
+			List<Target> values = new ArrayList<>(targets.values());
+			for (int i = 0; i < randomTargetsNumber; i++) {
+				// shuffle the list
+				Collections.shuffle(values);
+				Target randomTarget = values.get(i);
+				
+				if(randomTarget.getRequestedBy().size() < 5){
+					request.AddLocation(randomTarget);
+					randomTarget.addRequestedBy(request);
+					values.remove(randomTarget);
+				}
+				else{
+					--i;
+					continue;
+				}
+			}
+		}
+	}
+	
 	// generate virtual targets for each request
 	public static void generateVirtualTargets(Requests requests) {
 		for (Request request : requests.values()) {
