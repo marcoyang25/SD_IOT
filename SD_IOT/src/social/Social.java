@@ -10,7 +10,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import device.Sensor;
 
 public class Social {
-	public static final double GAMMA = 0.5;
+	public static final double GAMMA = 0.2;
 
 	private Social() {
 	}
@@ -21,9 +21,9 @@ public class Social {
 
 	// if source has a relationship with sensors selected in set cover
 	public static boolean hasRelationship(int source, Set<Sensor> sensorsSelected,
-			DijkstraShortestPath<Integer, DefaultEdge> d) {
+			Graph<Integer, DefaultEdge> graph) {
 		for (Sensor sensor : sensorsSelected) {
-			if (d.getPathWeight(source, sensor.getId()) == 1) {
+			if (graph.containsEdge(source, sensor.getId())) {
 				return true;
 			}
 		}
@@ -66,7 +66,7 @@ public class Social {
 			// shuffle the list
 			Collections.shuffle(vertices);
 			// select some vertices from list
-			for (int i = 0, degree = random.nextInt(vertices.size()); i < degree; i++) {
+			for (int i = 0, degree = random.nextInt(20) + 10; i < degree; i++) {
 				int v1 = vertices.get(i);
 				g.addEdge(v0, v1);
 			}
