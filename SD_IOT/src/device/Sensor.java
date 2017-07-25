@@ -45,6 +45,14 @@ public class Sensor {
 			}
 		}
 	}
+	
+	public Sensor(int id) {
+		this.id = id;
+		this.coverage = new HashSet<>();
+		this.cost = -1; // initialize cost
+		this.size = 1;
+		this.association = -1; // initialize association
+	}
 
 	private synchronized void setID() {
 		this.id = ++count;
@@ -101,6 +109,10 @@ public class Sensor {
 
 	public void setCoverage(Set<Target> coverage) {
 		this.coverage = new HashSet<>(coverage);
+	}
+	
+	public void addCoverage(Target target) {
+		this.coverage.add(target);
 	}
 
 	public void setVirtualTargetsCoverage(Set<VirtualTarget> coverage) {

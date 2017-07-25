@@ -25,6 +25,12 @@ public class Target {
 		this.coveredBy = new HashSet<>();
 		this.requestedBy = new HashSet<>();
 	}
+	
+	public Target(int id) {
+		this.id = id;
+		this.coveredBy = new HashSet<>();
+		this.requestedBy = new HashSet<>();
+	}
 
 	private synchronized void setId() {
 		this.id = ++count;
