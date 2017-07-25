@@ -3,6 +3,9 @@ package device;
 import java.util.*;
 
 public class Targets extends HashMap<Integer, Target> {
+	public Targets() {
+	}
+
 	public Targets(int n) {
 		for (int i = 0; i < n; i++) {
 			Target t = new Target();
