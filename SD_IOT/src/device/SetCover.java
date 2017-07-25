@@ -200,6 +200,33 @@ public class SetCover {
 		}
 		return sensorsSelected; // return all sensors selected
 	} // end method greedy
+	
+	public static Set<Sensor> ESR(Targets targets, Sensors sensors) {
+		final Set<Target> X = new HashSet<>(targets.values());
+		final Set<Sensor> F = new HashSet<>(sensors.values());
+		Set<Target> U = new HashSet<>(X); // U = X
+		Set<Target> S = new HashSet<>();
+		Set<Set<Target>> e = new HashSet<>(); // e = empty set
+		Set<Sensor> sensorsSelected = new HashSet<>();
+		Set<Sensor> sensorsAvailable = new HashSet<>(F);
+
+		/* while U != empty set */
+		while (!U.isEmpty() && !sensorsAvailable.isEmpty()) {
+			S = selectMinCost(sensorsAvailable, U, sensorsSelected);
+			/* U = U - S */
+			simpleRemove(U, S, e);
+		}
+		if (!U.isEmpty() && sensorsAvailable.isEmpty()) {
+			// no solution
+			return null;
+		}
+
+		if (!checkCorrectness(X, e)) {
+			System.err.println("Sensor(s) Not Covered!");
+			return null;
+		}
+		return sensorsSelected; // return all sensors selected
+	} // end method ESR
 
 	private static Set<Target> selectMinCost(Set<Sensor> sensorsAvailable, Set<Target> U, Set<Sensor> sensorsSelected) {
 		Sensor minSensor = null;
