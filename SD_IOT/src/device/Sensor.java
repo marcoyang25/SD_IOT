@@ -16,12 +16,18 @@ public class Sensor {
 	private double size; // flow size
 	private int association; // associate with a BS
 	private Set<Target> coverage; // targets covered by the sensor
+	private boolean aggregated;
 
 	private final Random radius = new Random();
 	private final Random angle = new Random();
 
 	public Sensor() {
 		this.id = ++count;
+		this.coverage = new HashSet<>();
+		this.cost = -1; // initialize cost
+		this.size = 1;
+		this.association = -1; // initialize association
+		this.aggregated = false;
 	}
 
 	public Sensor(Targets targets) {
@@ -36,6 +42,7 @@ public class Sensor {
 		this.cost = -1; // initialize cost
 		this.size = 1;
 		this.association = -1; // initialize association
+		this.aggregated = false;
 
 		for (Target target : targets.values()) {
 			// for each target
@@ -52,6 +59,7 @@ public class Sensor {
 		this.cost = -1; // initialize cost
 		this.size = 1;
 		this.association = -1; // initialize association
+		this.aggregated = false;
 	}
 
 	private synchronized void setID() {
@@ -117,6 +125,14 @@ public class Sensor {
 
 	public void setVirtualTargetsCoverage(Set<VirtualTarget> coverage) {
 		this.coverage = new HashSet<>(coverage);
+	}
+
+	public boolean isAggregated() {
+		return aggregated;
+	}
+
+	public void setAggregated(boolean aggregated) {
+		this.aggregated = aggregated;
 	}
 
 	public double calculateDistance(double x1, double y1, double x2, double y2) {
