@@ -12,6 +12,11 @@ public class Request {
 		this.id = ++count;
 		this.locations = new HashSet<>();
 	}
+	
+	public Request(int id) {
+		this.id = id;
+		this.locations = new HashSet<>();
+	}
 
 	public int getId() {
 		return id;

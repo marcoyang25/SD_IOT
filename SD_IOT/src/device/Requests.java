@@ -3,6 +3,9 @@ package device;
 import java.util.*;
 
 public class Requests extends HashMap<Integer, Request> {
+	public Requests(){
+	}
+	
 	public Requests(int n) {
 		for (int i = 0; i < n; i++) {
 			Request r = new Request();
