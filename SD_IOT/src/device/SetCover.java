@@ -100,6 +100,10 @@ public class SetCover {
 		Sensor sensorGroup = new Sensor();
 		sensorGroup.setCost(calculateGroupCost(host, sensorsSelected));
 		sensorGroup.setCoverage(targets);
+		// setting aggregated information
+		if (host.isAggregated()) {
+			sensorGroup.setAggregated(true);
+		}
 
 		if (!checkCorrectness(X, e)) {
 			System.err.println("Sensor(s) Not Covered!");
