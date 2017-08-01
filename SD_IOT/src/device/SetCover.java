@@ -43,7 +43,7 @@ public class SetCover {
 	} // end method setcover
 
 	private static Set<Target> selectMax(Set<Sensor> sensorsAvailable, Set<Target> U, Set<Sensor> sensorsSelected) {
-		Sensor maxSensor = new Sensor();
+		Sensor maxSensor = null;
 
 		/* select an S which is a member of F that maximizes |S ∩ U| */
 		int max = -1;
@@ -311,7 +311,7 @@ public class SetCover {
 	} // end method greedyMSC
 
 	private static Target selectMinCovered(Set<Target> U) {
-		Target minTarget = new Target();
+		Target minTarget = null;
 		int min = Integer.MAX_VALUE;
 		for (Target target : U) {
 			if (target.getCoverdBy().size() <= min) {
@@ -324,7 +324,7 @@ public class SetCover {
 
 	private static Set<Target> selectMscMax(Target minCovered, Set<Sensor> sensorsAvailable, Set<Target> U,
 			Set<Sensor> sensorsSelected) {
-		Sensor maxSensor = new Sensor();
+		Sensor maxSensor = null;
 
 		int max = -1;
 		Set<Target> S = new HashSet<>();
