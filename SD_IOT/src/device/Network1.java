@@ -18,6 +18,7 @@ public class Network1 implements Runnable {
 	private final int REQUESTS_SIZE;
 	private final int BS_NUM;
 	private final int MEC_NUM;
+	private final int NORMALIZE;
 
 	public Network1(String name, String file, int id, int sensors_size, int requests_size, int bs_num, int mec_num) {
 		this.name = name;
@@ -27,6 +28,18 @@ public class Network1 implements Runnable {
 		this.REQUESTS_SIZE = requests_size;
 		this.BS_NUM = bs_num;
 		this.MEC_NUM = mec_num;
+		this.NORMALIZE = 5; // default
+	}
+	
+	public Network1(String name, String file, int id, int sensors_size, int requests_size, int bs_num, int mec_num, int normalize) {
+		this.name = name;
+		this.file = new File(file);
+		this.CS_ID = id;
+		this.SENSORS_SIZE = sensors_size;
+		this.REQUESTS_SIZE = requests_size;
+		this.BS_NUM = bs_num;
+		this.MEC_NUM = mec_num;
+		this.NORMALIZE = normalize;
 	}
 
 	public void run() {
@@ -53,7 +66,7 @@ public class Network1 implements Runnable {
 		DijkstraShortestPath<Integer, DefaultEdge> socialDijkstra;
 
 		// running n times
-		for (int n = 0; n < 100; n++) {
+		for (int n = 0; n < 200; n++) {
 			// generating topology
 			graph = new SimpleGraph<>(DefaultEdge.class);
 			try {
@@ -117,6 +130,11 @@ public class Network1 implements Runnable {
 				sensor.setCost(Topo.getEnergyConsumed(baseStation, cloudServer, sensor.getSize(), d)
 						+ Sensor.SENSOR_TRANSMISSION_COST);
 			}
+			
+			for (Sensor sensor : sensorsSelected) {
+				sensor.setCost(sensor.getCost() * NORMALIZE);
+			}
+			
 			mss.add(SetCover.computeTotalSelectedCost(sensorsSelected));
 
 			// ----------------------------------------G-MSC---------------------------------------------------
@@ -133,6 +151,11 @@ public class Network1 implements Runnable {
 				Vertex baseStation = vertices.bs.get(random.nextInt(vertices.bs.size()));
 				sensor.setCost(Topo.getEnergyConsumed(baseStation, cloudServer, sensor.getSize(), d));
 			}
+			
+			for (Sensor sensor : sensorsSelected) {
+				sensor.setCost(sensor.getCost() * NORMALIZE);
+			}
+			
 			gmsc.add(SetCover.computeTotalSelectedCost(sensorsSelected));
 
 			// ----------------------------------------ESRS---------------------------------------------------
@@ -233,29 +256,29 @@ public class Network1 implements Runnable {
 			/*System.out.println("-----------------------------------------sensors:");
 			for(Sensor sensor : sensors.values()) {
 				System.out.print(sensor);
-				System.out.println("Cost:" + sensor.getCost());
+				System.out.println("Cost: " + sensor.getCost());
 				System.out.println(sensor.getCoverage());
 			}
 			
 			System.out.println("------------------------------------------groups:");
 			for(Sensor sensor : groups) {
 				System.out.print(sensor);
-				System.out.println("Cost:" + sensor.getCost());
+				System.out.println("Cost: " + sensor.getCost());
 				System.out.println(sensor.getCoverage());
 			}*/
 
 			// *******************************greedy*********************************
 			// modify cost
 			for(Sensor sensor : sensors.values()) {
-				sensor.setCost(sensor.getCost() * 2);
+				sensor.setCost(sensor.getCost() * NORMALIZE);
 			}
 			if ((sensorsSelected = SetCover.greedy(virtualTargets, sensors, groups)) != null) {
-				/*Set<Sensor> groupSelected = new HashSet<>(sensorsSelected);
+				Set<Sensor> groupSelected = new HashSet<>(sensorsSelected);
 				groupSelected.retainAll(groups);
 				
-				groups_size.add(Double.valueOf(groups.size()));
-				sensors_selected_size.add(Double.valueOf(sensorsSelected.size()));
-				groups_selected_size.add(Double.valueOf(groupSelected.size()));*/
+				/*groups_size.add(Double.valueOf(groups.size()));
+				sensors_selected_size.add(Double.valueOf(sensorsSelected.size()));*/
+				groups_selected_size.add(Double.valueOf(groupSelected.size()));
 				
 				/*System.out.println("groups.size() " + groups.size());
 				System.out.println("sensorsSelected " + sensorsSelected.size());
@@ -264,10 +287,32 @@ public class Network1 implements Runnable {
 				System.err.println("Greedy no solution");
 				System.exit(-1);
 			}
-			// reset cost
-			for(Sensor sensor : sensors.values()) {
-				sensor.setCost(sensor.getCost() / 2);
+			
+			
+			// debugging
+			/*Set<Sensor> groupSelected = new HashSet<>(sensorsSelected);
+			groupSelected.retainAll(groups);
+			Set<Sensor> senSelected = new HashSet<>(sensorsSelected);
+			senSelected.retainAll(sensors.values());
+			double sum1 = 0;
+			double sum2 = 0;
+			for(Sensor sensor : groupSelected) {
+				System.out.println("group cost: " + sensor.getCost());
+				sum1 += sensor.getCost();
 			}
+			for(Sensor sensor : senSelected) {
+				System.out.println("sensor cost: " + sensor.getCost());
+				sum2 += sensor.getCost();
+			}
+			System.out.println("group cost: " + sum1);
+			System.out.println("sensor cost: " + sum2);*/
+			// end debugging
+			
+			
+			// reset cost
+			/*for(Sensor sensor : sensors.values()) {
+				sensor.setCost(sensor.getCost() / 6);
+			}*/
 			esrs.add(SetCover.computeTotalSelectedCost(sensorsSelected));
 			
 		} // end for
@@ -280,6 +325,7 @@ public class Network1 implements Runnable {
 		System.out.println(name + " MSS-SPS = " + sum(mss) / mss.size());
 		System.out.println(name + " G-MSC = " + sum(gmsc) / gmsc.size());
 		System.out.println(name + " ESRS = " + sum(esrs) / esrs.size());
+		System.out.println(name + " groupSelected.size(): " + sum(groups_selected_size) / groups_selected_size.size());
 		
 	} // end run()
 	
