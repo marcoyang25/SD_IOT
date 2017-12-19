@@ -79,7 +79,8 @@ public class SetCover {
 
 		// the host of the sensor group
 		Sensor host = null;
-		// there's only host in sensorsSeleced now
+		// there's only host existing in sensorsSelected now
+		// getting host from sensorsSelected
 		for (Sensor sensor : sensorsSelected) {
 			host = sensor;
 		}
