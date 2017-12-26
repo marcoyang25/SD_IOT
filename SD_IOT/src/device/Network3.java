@@ -10,7 +10,9 @@ import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.*;
 
-public class Network1 implements Runnable {
+// The distance between MEC server and the nearest BS != 1
+public class Network3 implements Runnable{
+
 	private final String name;
 	private final File file;
 	private final int CS_ID;
@@ -20,7 +22,7 @@ public class Network1 implements Runnable {
 	private final int MEC_NUM;
 	private final int NORMALIZE;
 
-	public Network1(String name, String file, int id, int sensors_size, int requests_size, int bs_num, int mec_num) {
+	public Network3(String name, String file, int id, int sensors_size, int requests_size, int bs_num, int mec_num) {
 		this.name = name;
 		this.file = new File(file);
 		this.CS_ID = id;
@@ -31,7 +33,7 @@ public class Network1 implements Runnable {
 		this.NORMALIZE = 5; // default
 	}
 	
-	public Network1(String name, String file, int id, int sensors_size, int requests_size, int bs_num, int mec_num, int normalize) {
+	public Network3(String name, String file, int id, int sensors_size, int requests_size, int bs_num, int mec_num, int normalize) {
 		this.name = name;
 		this.file = new File(file);
 		this.CS_ID = id;
@@ -167,15 +169,16 @@ public class Network1 implements Runnable {
 				vertices.idToVertex.put(id, mec);
 				vertices.mec.add(mec);
 
-				// connect to base station
-				for (int i = 0; i < 1; i++) {
-					Vertex bs = vertices.bs.get(random.nextInt(vertices.bs.size()));
-					graph.addEdge(mec, bs);
-				}
 				// connect to switches
 				for (int i = 0; i < 2; i++) {
 					Vertex sw = vertices.switches.get(random.nextInt(vertices.switches.size()));
 					graph.addEdge(mec, sw);
+					d = new DijkstraShortestPath<>(graph);
+					if(checkNearestBS(mec, vertices.bs, d) != 2){
+						graph.removeEdge(mec, sw);
+						i--;
+						continue;
+					}
 				}
 			}
 			//System.out.println(graph);
@@ -220,7 +223,7 @@ public class Network1 implements Runnable {
 
 			// initialize groups
 			groups = new HashSet<>();
-			
+
 			// for each request, do ESRS
 			for (Request request : requests.values()) {
 				Sensor ESRSselected;
@@ -244,26 +247,26 @@ public class Network1 implements Runnable {
 
 			// generate virtual targets
 			Requests.generateVirtualTargets(requests);
-			
+
 			// replace each's coverage with virtual targets
 			Sensors.replaceWithVirtualTargets(sensors, requests);
-			
+
 			// union all virtual locations of each request
 			Set<Target> virtualTargets = Requests.getAllVirtualTargets(requests);
 			//System.out.println("virtualTargets: " + virtualTargets);
-				
-			
+
+
 			/*System.out.println("-----------------------------------------sensors:");
 			for(Sensor sensor : sensors.values()) {
 				System.out.print(sensor);
-				System.out.println("Cost: " + sensor.getCost());
+				System.out.println("Cost:" + sensor.getCost());
 				System.out.println(sensor.getCoverage());
 			}
-			
+
 			System.out.println("------------------------------------------groups:");
 			for(Sensor sensor : groups) {
 				System.out.print(sensor);
-				System.out.println("Cost: " + sensor.getCost());
+				System.out.println("Cost:" + sensor.getCost());
 				System.out.println(sensor.getCoverage());
 			}*/
 
@@ -273,13 +276,13 @@ public class Network1 implements Runnable {
 				sensor.setCost(sensor.getCost() * NORMALIZE);
 			}
 			if ((sensorsSelected = SetCover.greedy(virtualTargets, sensors, groups)) != null) {
-				Set<Sensor> groupSelected = new HashSet<>(sensorsSelected);
+				/*Set<Sensor> groupSelected = new HashSet<>(sensorsSelected);
 				groupSelected.retainAll(groups);
-				
-				/*groups_size.add(Double.valueOf(groups.size()));
-				sensors_selected_size.add(Double.valueOf(sensorsSelected.size()));*/
-				groups_selected_size.add(Double.valueOf(groupSelected.size()));
-				
+
+				groups_size.add(Double.valueOf(groups.size()));
+				sensors_selected_size.add(Double.valueOf(sensorsSelected.size()));
+				groups_selected_size.add(Double.valueOf(groupSelected.size()));*/
+
 				/*System.out.println("groups.size() " + groups.size());
 				System.out.println("sensorsSelected " + sensorsSelected.size());
 				System.out.println("groupSelected.size(): " + groupSelected.size());*/
@@ -287,11 +290,14 @@ public class Network1 implements Runnable {
 				System.err.println("Greedy no solution");
 				System.exit(-1);
 			}
-			
+			// reset cost
+			/*for(Sensor sensor : sensors.values()) {
+				sensor.setCost(sensor.getCost() / 2);
+			}*/
 			esrs.add(SetCover.computeTotalSelectedCost(sensorsSelected));
-			
+
 		} // end for
-		
+
 		// print result
 		/*System.out.println(name + " groups.size(): " + sum(groups_size) / groups_size.size());
 		System.out.println(name + " sensorsSelected: " + sum(sensors_selected_size) / sensors_selected_size.size());
@@ -300,10 +306,9 @@ public class Network1 implements Runnable {
 		System.out.println(name + " MSS-SPS = " + sum(mss) / mss.size());
 		System.out.println(name + " G-MSC = " + sum(gmsc) / gmsc.size());
 		System.out.println(name + " ESRS = " + sum(esrs) / esrs.size());
-		System.out.println(name + " groupSelected.size(): " + sum(groups_selected_size) / groups_selected_size.size());
-		
+
 	} // end run()
-	
+
 	public double sum(List<Double> valuesToSum) {
 		double sum = 0;
 		for (Double value : valuesToSum) {
@@ -312,4 +317,16 @@ public class Network1 implements Runnable {
 		return sum;
 	}
 	
+	public double checkNearestBS(Vertex mec, List<Vertex> bs, DijkstraShortestPath<Vertex, DefaultEdge> d) {
+		double min = Double.MAX_VALUE;
+		double weight = 0;
+		for(Vertex baseStation : bs) {
+			weight = d.getPathWeight(mec, baseStation);
+			if(weight <= min) {
+				min = weight;
+			}
+		}
+		return min;
+	}
+
 }
