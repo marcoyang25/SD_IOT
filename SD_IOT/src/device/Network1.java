@@ -62,6 +62,8 @@ public class Network1 implements Runnable {
 		Graph<Integer, DefaultEdge> socialGraph;
 		Vertices vertices;
 		Vertex cloudServer;
+		
+		// a DijkstraShortestPath object to compute Dijkstra shortest path
 		DijkstraShortestPath<Vertex, DefaultEdge> d;
 		DijkstraShortestPath<Integer, DefaultEdge> socialDijkstra;
 
