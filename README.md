@@ -12,8 +12,8 @@ final String INS_GML = "Your_Path\\setcover\\gml\\IowaStatewideFiberMap.gml";
 ```
 
 ## JGraphT
-* JGraphT Version used: 1.01
-* Some methods used in this projetct had been markded as `Deprecated` by the latest [JGraphT API].
+* JGraphT version used: 1.01
+* Some methods used in this project have been marked as `Deprecated` by the latest [JGraphT API].
 * e.g. `GmlImporter` and `VertexProvider` in `SD_IOT\src\graph\Topo.java`.
 
 ## Useful Links
