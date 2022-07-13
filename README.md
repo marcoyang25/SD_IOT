@@ -1,7 +1,7 @@
 # SD-IOT
 
 ## Run Configuration
-1. Import as a Maven project
+1. Import as a Maven project.
 2. Increase application [heap size] in run configuration.
 ```
 -Xmx4096m
