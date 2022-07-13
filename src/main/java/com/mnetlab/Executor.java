@@ -5,10 +5,8 @@ import com.mnetlab.device.Network3;
 import java.util.concurrent.*;
 
 public class Executor {
-	public static final String INS_GML = "C:\\Users\\marco\\git\\setcover\\setcover\\gml\\IowaStatewideFiberMap.gml";
-	public static final String PALMETTO_GML = "C:\\Users\\marco\\git\\setcover\\setcover\\gml\\Palmetto.gml";
-	//public static final String INS_GML = "/home/mnetlab/eclipse-workspace/SD_IOT/SD_IOT/gml/IowaStatewideFiberMap.gml";
-	//public static final String PALMETTO_GML = "/home/mnetlab/eclipse-workspace/SD_IOT/SD_IOT/gml/Palmetto.gml";
+	public static final String INS_GML = "./src/main/resources/gml/IowaStatewideFiberMap.gml";
+	public static final String PALMETTO_GML = "./src/main/resources/gml/Palmetto.gml";
 	
 	public static final int INS_CS_ID = 26; // Sioux Falls
 	public static final int PALMETTO_CS_ID = 29; // Boone
