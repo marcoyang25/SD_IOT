@@ -1,13 +1,18 @@
 package com.mnetlab.sdiot.social;
 
-import java.util.*;
-
-import org.jgrapht.generate.*;
-import org.jgrapht.graph.*;
+import com.mnetlab.sdiot.device.Sensor;
 import org.jgrapht.Graph;
 import org.jgrapht.VertexFactory;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import com.mnetlab.sdiot.device.Sensor;
+import org.jgrapht.generate.CompleteGraphGenerator;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 public class Social {
 	public static final double GAMMA = 0.02;

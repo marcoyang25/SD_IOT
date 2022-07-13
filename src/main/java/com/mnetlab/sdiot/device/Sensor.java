@@ -1,6 +1,9 @@
 package com.mnetlab.sdiot.device;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 public class Sensor {
 	public static final double MAX_RADIUS = 100;

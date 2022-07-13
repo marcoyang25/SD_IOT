@@ -2,7 +2,8 @@ package com.mnetlab.sdiot;
 
 import com.mnetlab.sdiot.network.Network3;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Executor {
 	public static final String INS_GML = "./src/main/resources/gml/IowaStatewideFiberMap.gml";

@@ -1,12 +1,12 @@
 package com.mnetlab.sdiot.device;
 
-import java.util.Set;
-import java.util.HashSet;
-
 import com.mnetlab.sdiot.social.Social;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultEdge;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class SetCover {
 	private SetCover() {
