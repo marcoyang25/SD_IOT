@@ -1,12 +1,8 @@
 # SD-IOT
 
 ## Run Configuration
-1. Link all libraries in `SD_IOT\lib` to your project.
-2. Modify GML files path in `SD_IOT\src\device\Executor.java`.
-```java
-final String INS_GML = "Your_Path\\setcover\\gml\\IowaStatewideFiberMap.gml";
-```
-3. Increase application [heap size] in run configuration.
+1. Import as a Maven project
+2. Increase application [heap size] in run configuration.
 ```
 -Xmx4096m
 ```
@@ -14,7 +10,7 @@ final String INS_GML = "Your_Path\\setcover\\gml\\IowaStatewideFiberMap.gml";
 ## JGraphT
 * JGraphT version used: 1.01
 * Some methods used in this project have been marked as `Deprecated` by the latest [JGraphT API].
-* e.g. `GmlImporter` and `VertexProvider` in `SD_IOT\src\graph\Topo.java`.
+* e.g. `GmlImporter` and `VertexProvider` in `Topo.java`.
 
 ## Useful Links
 - [Github JGraphT Wiki](https://github.com/jgrapht/jgrapht/wiki)
