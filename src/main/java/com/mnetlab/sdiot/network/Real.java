@@ -1,10 +1,11 @@
-package com.mnetlab.device;
+package com.mnetlab.sdiot.network;
 
-import com.mnetlab.graph.Topo;
-import com.mnetlab.graph.Type;
-import com.mnetlab.graph.Vertex;
-import com.mnetlab.graph.Vertices;
-import com.mnetlab.social.Social;
+import com.mnetlab.sdiot.graph.Topo;
+import com.mnetlab.sdiot.graph.Type;
+import com.mnetlab.sdiot.graph.Vertex;
+import com.mnetlab.sdiot.graph.Vertices;
+import com.mnetlab.sdiot.device.*;
+import com.mnetlab.sdiot.social.Social;
 
 import java.util.*;
 import java.io.*;

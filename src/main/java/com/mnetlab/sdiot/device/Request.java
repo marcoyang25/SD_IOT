@@ -1,4 +1,4 @@
-package com.mnetlab.device;
+package com.mnetlab.sdiot.device;
 
 import java.util.*;
 

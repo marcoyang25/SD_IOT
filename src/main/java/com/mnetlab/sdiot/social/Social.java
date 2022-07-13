@@ -1,4 +1,4 @@
-package com.mnetlab.social;
+package com.mnetlab.sdiot.social;
 
 import java.util.*;
 
@@ -7,7 +7,7 @@ import org.jgrapht.graph.*;
 import org.jgrapht.Graph;
 import org.jgrapht.VertexFactory;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import com.mnetlab.device.Sensor;
+import com.mnetlab.sdiot.device.Sensor;
 
 public class Social {
 	public static final double GAMMA = 0.02;

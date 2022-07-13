@@ -1,4 +1,4 @@
-package com.mnetlab.device;
+package com.mnetlab.sdiot.device;
 
 public class VirtualTarget extends Target{
 	private int requestId;

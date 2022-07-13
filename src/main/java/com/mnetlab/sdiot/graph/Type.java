@@ -1,4 +1,4 @@
-package com.mnetlab.graph;
+package com.mnetlab.sdiot.graph;
 
 public enum Type {
 	BS("Base Station"), CLOUDSERVER("Cloud Server"), MEC("MEC Server"), SWITCH("Switch");

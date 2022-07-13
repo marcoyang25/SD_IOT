@@ -1,4 +1,4 @@
-package com.mnetlab.graph;
+package com.mnetlab.sdiot.graph;
 
 import java.util.*;
 

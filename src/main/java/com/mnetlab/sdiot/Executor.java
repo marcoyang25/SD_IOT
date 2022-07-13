@@ -1,6 +1,6 @@
-package com.mnetlab;
+package com.mnetlab.sdiot;
 
-import com.mnetlab.device.Network3;
+import com.mnetlab.sdiot.network.Network3;
 
 import java.util.concurrent.*;
 

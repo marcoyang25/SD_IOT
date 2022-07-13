@@ -1,9 +1,9 @@
-package com.mnetlab.device;
+package com.mnetlab.sdiot.device;
 
 import java.util.Set;
 import java.util.HashSet;
 
-import com.mnetlab.social.Social;
+import com.mnetlab.sdiot.social.Social;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;

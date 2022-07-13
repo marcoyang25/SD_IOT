@@ -1,4 +1,4 @@
-package com.mnetlab.graph;
+package com.mnetlab.sdiot.graph;
 
 public class Vertex {
 	public static final double BS_ENERGY = 0.5;

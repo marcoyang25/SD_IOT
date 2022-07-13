@@ -1,10 +1,11 @@
-package com.mnetlab.device;
+package com.mnetlab.sdiot.network;
 
-import com.mnetlab.graph.Topo;
-import com.mnetlab.graph.Type;
-import com.mnetlab.graph.Vertex;
-import com.mnetlab.graph.Vertices;
-import com.mnetlab.social.Social;
+import com.mnetlab.sdiot.device.*;
+import com.mnetlab.sdiot.graph.Topo;
+import com.mnetlab.sdiot.graph.Type;
+import com.mnetlab.sdiot.graph.Vertex;
+import com.mnetlab.sdiot.graph.Vertices;
+import com.mnetlab.sdiot.social.Social;
 
 import java.util.*;
 import java.io.*;
@@ -14,8 +15,9 @@ import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.*;
 
-// Calculating aggregated flows
-public class Network2 implements Runnable {
+// The distance between MEC server and the nearest BS != 1
+public class Network3 implements Runnable{
+
 	private final String name;
 	private final File file;
 	private final int CS_ID;
@@ -25,7 +27,7 @@ public class Network2 implements Runnable {
 	private final int MEC_NUM;
 	private final int NORMALIZE;
 
-	public Network2(String name, String file, int id, int sensors_size, int requests_size, int bs_num, int mec_num) {
+	public Network3(String name, String file, int id, int sensors_size, int requests_size, int bs_num, int mec_num) {
 		this.name = name;
 		this.file = new File(file);
 		this.CS_ID = id;
@@ -36,7 +38,7 @@ public class Network2 implements Runnable {
 		this.NORMALIZE = 5; // default
 	}
 	
-	public Network2(String name, String file, int id, int sensors_size, int requests_size, int bs_num, int mec_num, int normalize) {
+	public Network3(String name, String file, int id, int sensors_size, int requests_size, int bs_num, int mec_num, int normalize) {
 		this.name = name;
 		this.file = new File(file);
 		this.CS_ID = id;
@@ -52,7 +54,6 @@ public class Network2 implements Runnable {
 		List<Double> mss = new ArrayList<>();
 		List<Double> gmsc = new ArrayList<>();
 		List<Double> esrs = new ArrayList<>();
-		List<Double> aggregated = new ArrayList<>();
 		List<Double> groups_size = new ArrayList<>();
 		List<Double> sensors_selected_size = new ArrayList<>();
 		List<Double> groups_selected_size = new ArrayList<>();
@@ -173,20 +174,8 @@ public class Network2 implements Runnable {
 				vertices.idToVertex.put(id, mec);
 				vertices.mec.add(mec);
 
-				// connect to base station
-				for (int i = 0; i < 1; i++) {
-					Vertex bs = vertices.bs.get(random.nextInt(vertices.bs.size()));
-					graph.addEdge(mec, bs);
-				}
 				// connect to switches
 				for (int i = 0; i < 2; i++) {
-					Vertex sw = vertices.switches.get(random.nextInt(vertices.switches.size()));
-					graph.addEdge(mec, sw);
-				}
-				
-				/* DISTANCE = 2 */
-				// connect to switches
-				/*for (int i = 0; i < 2; i++) {
 					Vertex sw = vertices.switches.get(random.nextInt(vertices.switches.size()));
 					graph.addEdge(mec, sw);
 					d = new DijkstraShortestPath<>(graph);
@@ -195,7 +184,7 @@ public class Network2 implements Runnable {
 						i--;
 						continue;
 					}
-				}*/
+				}
 			}
 			//System.out.println(graph);
 
@@ -226,12 +215,6 @@ public class Network2 implements Runnable {
 				// non-aggregation paths, sets its energy cost
 				double minEnergy = Double.min(Topo.getEnergyConsumed(baseStation, cloudServer, sensor.getSize(), d),
 						Topo.getMinAggregationEnergyConsumed(baseStation, mecs, cloudServer, sensor.getSize(), d));
-				// set sensor's aggregated information
-				if (Double.compare(
-						Topo.getMinAggregationEnergyConsumed(baseStation, mecs, cloudServer, sensor.getSize(), d),
-						Topo.getEnergyConsumed(baseStation, cloudServer, sensor.getSize(), d)) < 0) {
-					sensor.setAggregated(true);
-				}
 				sensor.setCost(minEnergy + Sensor.SENSOR_TRANSMISSION_COST);
 			}
 
@@ -299,11 +282,11 @@ public class Network2 implements Runnable {
 			}
 			if ((sensorsSelected = SetCover.greedy(virtualTargets, sensors, groups)) != null) {
 				/*Set<Sensor> groupSelected = new HashSet<>(sensorsSelected);
-				groupSelected.retainAll(groups);*/
+				groupSelected.retainAll(groups);
 
-				/*groups_size.add(Double.valueOf(groups.size()));
-				sensors_selected_size.add(Double.valueOf(sensorsSelected.size()));*/
-				//groups_selected_size.add(Double.valueOf(groupSelected.size()));
+				groups_size.add(Double.valueOf(groups.size()));
+				sensors_selected_size.add(Double.valueOf(sensorsSelected.size()));
+				groups_selected_size.add(Double.valueOf(groupSelected.size()));*/
 
 				/*System.out.println("groups.size() " + groups.size());
 				System.out.println("sensorsSelected " + sensorsSelected.size());
@@ -314,15 +297,8 @@ public class Network2 implements Runnable {
 			}
 			// reset cost
 			/*for(Sensor sensor : sensors.values()) {
-				sensor.setCost(sensor.getCost() / 3);
+				sensor.setCost(sensor.getCost() / 2);
 			}*/
-			
-			// calculated aggregated flows
-			for(Sensor sensor : sensorsSelected) {
-				if(sensor.isAggregated()) {
-					aggregated.add(1.0);
-				}
-			}
 			esrs.add(SetCover.computeTotalSelectedCost(sensorsSelected));
 
 		} // end for
@@ -335,11 +311,9 @@ public class Network2 implements Runnable {
 		System.out.println(name + " MSS-SPS = " + sum(mss) / mss.size());
 		System.out.println(name + " G-MSC = " + sum(gmsc) / gmsc.size());
 		System.out.println(name + " ESRS = " + sum(esrs) / esrs.size());
-		System.out.println(name + " aggregated = " + sum(aggregated) / esrs.size());
-		//System.out.println(name + " groupSelected.size(): " + sum(groups_selected_size) / groups_selected_size.size());
 
 	} // end run()
-	
+
 	public double sum(List<Double> valuesToSum) {
 		double sum = 0;
 		for (Double value : valuesToSum) {
@@ -359,4 +333,5 @@ public class Network2 implements Runnable {
 		}
 		return min;
 	}
+
 }
