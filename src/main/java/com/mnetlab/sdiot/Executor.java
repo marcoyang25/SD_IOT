@@ -6,8 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Executor {
-	public static final String INS_GML = "./src/main/resources/gml/IowaStatewideFiberMap.gml";
-	public static final String PALMETTO_GML = "./src/main/resources/gml/Palmetto.gml";
+	public static final String INS_GML = "gml/IowaStatewideFiberMap.gml";
+	public static final String PALMETTO_GML = "gml/Palmetto.gml";
 	
 	public static final int INS_CS_ID = 26; // Sioux Falls
 	public static final int PALMETTO_CS_ID = 29; // Boone

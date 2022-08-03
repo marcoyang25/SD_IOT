@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -39,7 +40,7 @@ public class Real implements Runnable {
 
 	public Real(String name, String file, int id, int sensors_size, int requests_size, int bs_num, int mec_num) {
 		this.name = name;
-		this.file = new File(file);
+		this.file = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(file)).getFile());
 		this.CS_ID = id;
 		this.SENSORS_SIZE = sensors_size;
 		this.REQUESTS_SIZE = requests_size;
